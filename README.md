@@ -8,18 +8,17 @@
 
 ### Ultrasonic Doppler Measurement Front-End (USD3.0)
 
-**Designed by [Hibrar Ahmad](https://github.com/hiibrarahmad)**
+Designed by [Hibrar Ahmad](https://github.com/hiibrarahmad)
 
-[![PCB Version](https://img.shields.io/badge/PCB%20Version-USD3.0-00c8ff?style=for-the-badge)](#)
+[![Project](https://img.shields.io/badge/Project-USD3.0-0ea5e9?style=for-the-badge)](#)
 [![MCU](https://img.shields.io/badge/MCU-LPC4330-22c55e?style=for-the-badge)](#)
 [![CPLD](https://img.shields.io/badge/CPLD-MachXO2-ef4444?style=for-the-badge)](#)
 [![ADC](https://img.shields.io/badge/ADC-AD9245-0ea5e9?style=for-the-badge)](#)
 [![USB](https://img.shields.io/badge/USB-Micro--B-f59e0b?style=for-the-badge)](#)
-[![Transducer](https://img.shields.io/badge/Transducer-4%20%2F%208%20MHz-a855f7?style=for-the-badge)](#)
+[![Status](https://img.shields.io/badge/Status-Research%20Prototype-64748b?style=for-the-badge)](#)
 
 [![Last Commit](https://img.shields.io/github/last-commit/hiibrarahmad/PRJ-2024-PCB-0020-ULTRASOUND-DOPPLER.github.io?style=for-the-badge&color=0891b2&label=Last%20Commit)](../../commits/main)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-22c55e?style=for-the-badge&logo=github)](https://hiibrarahmad.github.io/PRJ-2024-PCB-0020-ULTRASOUND-DOPPLER.github.io/)
-[![Visitors](https://visitor-badge.laobi.icu/badge?page_id=hiibrarahmad.PRJ-2024-PCB-0020-ULTRASOUND-DOPPLER.github.io&style=for-the-badge&color=0e7490)](https://github.com/hiibrarahmad/PRJ-2024-PCB-0020-ULTRASOUND-DOPPLER.github.io)
 
 <br/>
 
@@ -29,9 +28,26 @@
 
 ---
 
-## Project Overview
+## Contents
 
-**PRJ-2024-PCB-0020-ULTRASOUND-DOPPLER** (USD3.0) is a USB-controlled ultrasonic Doppler measurement front-end. It drives a piezoelectric transducer, receives Doppler-shifted echoes, filters and amplifies the signal, digitizes it, and streams data for analysis.
+1. Overview
+2. PCB Preview
+3. System Summary
+4. Key Specifications
+5. Key Components
+6. Interfaces and Debug
+7. Power Domains
+8. Documents and Downloads
+9. Interactive BOM
+10. Repository Structure
+11. Safety Notice
+12. Links
+
+---
+
+## Overview
+
+**PRJ-2024-PCB-0020-ULTRASOUND-DOPPLER** (USD3.0) is a USB-controlled ultrasonic Doppler measurement front-end. It excites a piezoelectric transducer, receives Doppler-shifted echoes, filters and amplifies the signal, digitizes it, and streams data for analysis.
 
 ---
 
@@ -56,26 +72,17 @@
 </tr>
 </table>
 
-<div align="center">
-
-**View the Interactive PCB Online:**
-https://hiibrarahmad.github.io/PRJ-2024-PCB-0020-ULTRASOUND-DOPPLER.github.io/
-
-</div>
-
 ---
 
-## Core Design Goals
+## System Summary
 
-| Goal | Specification |
-|------|--------------|
-| Ultrasonic Front-End | Differential TX/RX signal chain for Doppler measurement |
-| MCU | NXP LPC4330 (Cortex-M4) control and USB communication |
-| CPLD | Lattice MachXO2 timing/state machine |
-| ADC | AD9245, 14-bit differential input |
-| Band-pass | 140 kHz to 9.8 MHz (per schematic notes) |
-| Transducer | 4 MHz / 8 MHz supported (2 MHz with added series resistance) |
-| Power | USB or external input with regulated 5 V and 3.3 V rails |
+Signal chain overview (schematics-based):
+
+- CPLD generates TX timing and gating signals.
+- Differential line driver excites the piezo transducer via RF transformers.
+- Echo returns through band-pass filtering and protection network.
+- Differential RF/IF amplifier drives a 14-bit ADC.
+- MCU handles control and USB communication.
 
 ---
 
@@ -83,28 +90,63 @@ https://hiibrarahmad.github.io/PRJ-2024-PCB-0020-ULTRASOUND-DOPPLER.github.io/
 
 | Parameter | Value |
 |----------|-------|
-| Band-pass response | f_low ~ 140 kHz, f_high ~ 9.8 MHz |
+| Band-pass response | f_low ~ 140 kHz, f_high ~ 9.8 MHz (schematic note) |
 | Insertion loss | ~ -1.4 dB at 8 MHz (schematic note) |
 | ADC | AD9245BCPZ-80, 14-bit differential |
 | MCU clock | 12 MHz crystal |
 | CPLD clock | 64 MHz oscillator |
-| Power rails | TXD5V0, VDD5V0, RXA3V3, VDD3V3 |
+| Supported transducers | 4 MHz and 8 MHz (2 MHz with added series resistance) |
 | Interfaces | USB Micro-B, USB-A male/female, SWD/JTAG |
 
 ---
 
-## Interfaces
+## Key Components
 
-- USB Micro-B (USB0 data + VBUS)
-- USB-A female and USB-A male (system overview)
-- External power jack (NETPW)
-- SWD/JTAG headers for MCU and CPLD
+| Function | Component |
+|---------|-----------|
+| MCU | NXP LPC4330 (Cortex-M4) |
+| CPLD | Lattice MachXO2-7000HC |
+| ADC | AD9245 (14-bit) |
+| RX amplifier | AD8351 (RF/IF differential) |
+| TX driver | AD8018 (high-speed differential) |
+| Power mux | TPS2115A |
+| Regulators | L78M05, ADP151, ADP7104 |
+
+---
+
+## Interfaces and Debug
+
+- USB Micro-B for data and power input.
+- USB-A male and USB-A female connectors for system routing.
+- External power jack (NETPW).
+- SWD/JTAG headers for MCU and CPLD programming/debug.
+- Test points distributed across key rails and signals.
+
+---
+
+## Power Domains
+
+- TXD5V0: Regulated 5 V for transmitter path.
+- VDD5V0: 5 V domain from muxed input.
+- RXA3V3: 3.3 V analog for receiver and ADC.
+- VDD3V3: 3.3 V digital for MCU and CPLD.
+- Separate grounds for power, digital, and analog sections.
+
+---
+
+## Documents and Downloads
+
+| Document | Location |
+|----------|----------|
+| Specification PDF | Assets/PRJ-2024-PCB-0020-ULTRASOUND-DOPPLER-Spec.pdf |
+| Interactive BOM | index.html (GitHub Pages) |
+| PCB Renders | Assets/ (Top/Bottom PNG/JPG) |
 
 ---
 
 ## Interactive BOM
 
-The Interactive BOM is available in the live page:
+Open the live viewer:
 https://hiibrarahmad.github.io/PRJ-2024-PCB-0020-ULTRASOUND-DOPPLER.github.io/
 
 ---
@@ -128,6 +170,12 @@ PRJ-2024-PCB-0020-ULTRASOUND-DOPPLER.github.io/
 
 ---
 
+## Safety Notice
+
+This project is a research hardware platform and is not a certified medical device. Use appropriate precautions and follow applicable regulations for any clinical or safety-critical usage.
+
+---
+
 ## Links
 
 | Resource | URL |
@@ -144,8 +192,8 @@ PRJ-2024-PCB-0020-ULTRASOUND-DOPPLER.github.io/
 
 **PRJ-2024-PCB-0020-ULTRASOUND-DOPPLER**
 
-*Ultrasonic Doppler Measurement Front-End*  
+Ultrasonic Doppler Measurement Front-End
 
-Copyright 2026 Hibrar Ahmad. All Rights Reserved.
+Copyright 2026 Hibrar Ahmad (hiibrarahmad). All Rights Reserved.
 
 </div>
