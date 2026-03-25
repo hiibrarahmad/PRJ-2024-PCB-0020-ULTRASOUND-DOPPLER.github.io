@@ -194,6 +194,6 @@ This project is a research hardware platform and is not a certified medical devi
 
 Ultrasonic Doppler Measurement Front-End
 
-Copyright 2026 Hibrar Ahmad (hiibrarahmad). All Rights Reserved.
+Copyright 2026 ibrar Ahmad (hiibrarahmad). All Rights Reserved.
 
 </div>
